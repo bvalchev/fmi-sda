@@ -1,4 +1,5 @@
 #include<iostream>
+#include<queue>
 using namespace std;
 template<typename T>
 struct node
@@ -32,6 +33,7 @@ public:
 	void Create3(T, BinTree<T>, BinTree<T>);
 	int findMaxHeight(node<T>*);
 	void levelOrderTransversal(node<T>*);
+	bool checkIfSearchTree(node<T>*);
 };
 template<typename T>
 BinTree<T>::BinTree()
@@ -80,7 +82,7 @@ node<T>* BinTree<T>::GetRoot()
 template<typename T>
 bool BinTree<T>::empty() const
 {
-	return root==NULL;
+	return root == NULL;
 }
 template<typename T>
 void BinTree<T>::print() const
@@ -113,30 +115,58 @@ int BinTree<T>::findMaxHeight(node<T>* p)
 		rightHeight = 1 + findMaxHeight(p->right);
 	}
 
-	return leftHeight > rightHeight ? leftHeight: rightHeight;
+	return leftHeight > rightHeight ? leftHeight : rightHeight;
 }
 template<typename T>
 void BinTree<T>::help(node<T>* p)
 {
 	if (p->left)
 		cout << p->left->inf << " ";
-	if(p->right)
-		cout<< p->right->inf << " ";
+	if (p->right)
+		cout << p->right->inf << " ";
 }
 template<typename T>
-void BinTree<T>::levelOrderTransversal(node<T>* p)
+void BinTree<T>::levelOrderTransversal(node<T>* root)
 {
+	queue<node<T>*> q;
+
+	if (!root) {
+		return;
+	}
+	q.push(root);
 	cout << root->inf << " ";
-	p = root;
-	help(p);
-	if (p->left)
+	while (!q.empty())
 	{
-		help(p->left);
+		const node<T>* temp_node = q.front();
+		q.pop();
+
+		if (temp_node->left) {
+			q.push(temp_node->left);
+			cout << temp_node->left->inf << " ";
+		}
+		if (temp_node->right) {
+			q.push(temp_node->right);
+			cout << temp_node->right->inf << " ";
+		}
+		
 	}
-	if (p->right)
+}
+template<typename T>
+bool BinTree<T>::checkIfSearchTree(node<T>* p)
+{
+	if (p)
 	{
-		help(p->right);
+		if (p->left)
+			if (p->left->inf > p->inf)
+				return false;
+		if (p->right)
+			if (p->right->inf < p->inf)
+				return false;
+		checkIfSearchTree(p->left);
+		checkIfSearchTree(p->right);
 	}
+	else
+		return true;
 }
 template<typename T>
 BinTree<T>::~BinTree()
@@ -153,7 +183,7 @@ void BinTree<T>::DeleteBinTree(node<T>* &p) const
 		delete p;
 		p = NULL;
 	}
- }
+}
 
 template<typename T>
 void BinTree<T>::Copy(node<T>* &pos, node<T>* const & r) const
@@ -180,7 +210,7 @@ void BinTree<T>::pr(const node<T>* p) const
 	if (p)
 	{
 		pr(p->left);
-		cout << p->inf<<" ";
+		cout << p->inf << " ";
 		pr(p->right);
 	}
 }
@@ -213,6 +243,8 @@ int main()
 	a.print();
 	cout << a.findMaxHeight(a.GetRoot()) << endl;
 	a.levelOrderTransversal(a.GetRoot());
+	cout << endl;
+	cout << a.checkIfSearchTree(a.GetRoot());
 	system("pause");
 	return 0;
 }
